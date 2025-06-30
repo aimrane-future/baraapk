@@ -7,13 +7,13 @@ interface ApkCardProps {
     id: string;
     name: string;
     version: string;
-    size: string;
+    size: string | null;
     description: string;
     icon: string;
     screenshots: string[];
     downloadUrl: string;
-    rating: number;
-    downloads: number;
+    rating: number | null;
+    downloads: number | null;
     updatedAt: string;
     tags: string[];
   };
@@ -29,7 +29,8 @@ const ApkCard: React.FC<ApkCardProps> = ({ apk, onClick }) => {
     });
   };
 
-  const formatDownloads = (downloads: number) => {
+  const formatDownloads = (downloads: number | null) => {
+    if (downloads === null || downloads === undefined) return 'N/A';
     if (downloads >= 1000000) return `${(downloads / 1000000).toFixed(1)}M`;
     if (downloads >= 1000) return `${(downloads / 1000).toFixed(1)}K`;
     return downloads.toString();
@@ -48,19 +49,23 @@ const ApkCard: React.FC<ApkCardProps> = ({ apk, onClick }) => {
       <div className="flex items-start gap-4 mb-4">
         <div className="relative">
           <img
-            src={apk.icon || "https://images.pexels.com/photos/1482101/pexels-photo-1482101.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop"}
+            src={
+              apk.icon ||
+              "https://images.pexels.com/photos/1482101/pexels-photo-1482101.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop"
+            }
             alt={apk.name}
             className="w-16 h-16 rounded-2xl object-cover shadow-lg"
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = "https://images.pexels.com/photos/1482101/pexels-photo-1482101.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop";
+              target.src =
+                "https://images.pexels.com/photos/1482101/pexels-photo-1482101.jpeg?auto=compress&cs=tinysrgb&w=100&h=100&fit=crop";
             }}
           />
           <div className="absolute -top-2 -right-2 w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
-            {apk.rating}
+            {apk.rating !== null ? apk.rating : 'N/A'}
           </div>
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-bold text-gray-900 dark:text-white truncate group-hover:text-purple-600 dark:group-hover:text-purple-400 transition-colors">
             {apk.name}
@@ -69,7 +74,7 @@ const ApkCard: React.FC<ApkCardProps> = ({ apk, onClick }) => {
           <div className="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
             <div className="flex items-center gap-1">
               <HardDrive size={12} />
-              {apk.size}
+              {apk.size || 'N/A'}
             </div>
             <div className="flex items-center gap-1">
               <Download size={12} />
