@@ -3,21 +3,18 @@ import { motion } from 'framer-motion';
 import SearchBar from '../components/SearchBar';
 import ApkCard from '../components/ApkCard';
 import ApkModal from '../components/ApkModal';
-import { sampleApks } from '../data/sampleApks';
+import { appsDatabase, getAppStats, searchApps, AppData } from '../data/appsData';
 
 const Home: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedApk, setSelectedApk] = useState<typeof sampleApks[0] | null>(null);
+  const [selectedApk, setSelectedApk] = useState<AppData | null>(null);
 
   const filteredApks = useMemo(() => {
-    if (!searchTerm) return sampleApks;
-    
-    return sampleApks.filter(apk => 
-      apk.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      apk.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      apk.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    if (!searchTerm) return appsDatabase;
+    return searchApps(searchTerm);
   }, [searchTerm]);
+
+  const stats = getAppStats();
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -47,19 +44,19 @@ const Home: React.FC = () => {
       >
         <div className="text-center p-6 bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-gray-700">
           <div className="text-3xl font-bold text-purple-600 dark:text-purple-400 mb-2">
-            {sampleApks.length}+
+            {stats.totalApps}+
           </div>
           <div className="text-gray-600 dark:text-gray-300">Premium APKs</div>
         </div>
         <div className="text-center p-6 bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-gray-700">
           <div className="text-3xl font-bold text-pink-600 dark:text-pink-400 mb-2">
-            {sampleApks.reduce((acc, apk) => acc + apk.downloads, 0).toLocaleString()}+
+            {stats.totalDownloads.toLocaleString()}+
           </div>
           <div className="text-gray-600 dark:text-gray-300">Total Downloads</div>
         </div>
         <div className="text-center p-6 bg-white/10 dark:bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-white/20 dark:border-gray-700">
           <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-            {(sampleApks.reduce((acc, apk) => acc + apk.rating, 0) / sampleApks.length).toFixed(1)}
+            {stats.averageRating}
           </div>
           <div className="text-gray-600 dark:text-gray-300">Average Rating</div>
         </div>
